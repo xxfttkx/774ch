@@ -4,11 +4,12 @@ import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final settingsViewModel = SettingsViewModel();
   await settingsViewModel.load();
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => settingsViewModel)],
+      providers: [ChangeNotifierProvider.value(value: settingsViewModel)],
       child: const MyApp(),
     ),
   );
@@ -20,26 +21,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settingsViewModel = context.watch<SettingsViewModel>();
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: '774ch',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: settingsViewModel.color,
-            // ??const Color.fromARGB(255, 21, 255, 25),
-          ),
-          textTheme: Theme.of(context).textTheme.apply(
-            fontFamily: 'NotoSansSC',
-            fontSizeFactor: settingsViewModel.fontSizeFactor, // 缩放字体大小
-          ),
+
+    return MaterialApp(
+      title: '774ch',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: settingsViewModel.color),
+        textTheme: Theme.of(context).textTheme.apply(
+          fontFamily: 'NotoSansJP',
+          fontSizeFactor: settingsViewModel.fontSizeFactor,
         ),
-        locale: settingsViewModel.locale, // 如果你支持动态切换语言
-        home: const HomePage(),
       ),
+      locale: settingsViewModel.locale,
+      home: const HomePage(),
     );
   }
 }
-
-class MyAppState extends ChangeNotifier {}

@@ -57,10 +57,6 @@ class _ThreadPageState extends State<ThreadPage> {
         "uid_text": uidText,
         "body_text": bodyText,
       });
-
-      temp.sort(
-        (a, b) => int.parse(b["post_id"]!).compareTo(int.parse(a["post_id"]!)),
-      );
     }
 
     setState(() {
