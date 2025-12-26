@@ -59,6 +59,7 @@ class _ThreadPageState extends State<ThreadPage> {
       });
     }
 
+    if (!mounted) return;
     setState(() {
       replies = temp;
       loading = false;
@@ -102,7 +103,7 @@ class _ThreadPageState extends State<ThreadPage> {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Text(r["body_text"]!),
+                      SelectableText(r["body_text"]!),
                     ],
                   ),
                 );

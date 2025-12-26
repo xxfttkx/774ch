@@ -23,9 +23,9 @@ class _HomePageState extends State<HomePage> {
   void _search(String? keyword) {
     final query = keyword ?? controller.text.trim();
     if (query.isEmpty) return;
-    final vm = context.read<SettingsViewModel>();
+    final settingsViewModel = context.read<SettingsViewModel>();
 
-    vm.addSearchHistory(query); // 保存到历史
+    settingsViewModel.addSearchHistory(query); // 保存到历史
 
     final url = 'https://find.5ch.net/search?q=$query';
     Navigator.push(
@@ -36,7 +36,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<SettingsViewModel>();
+    final settingsViewModel = context.watch<SettingsViewModel>();
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: settingsViewModel.color,
+    );
+
     return Scaffold(
       appBar: AppBar(title: const Text('5ch Aggregator')),
       body: Stack(
@@ -64,35 +68,46 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 12),
                 // 搜索历史
-                if (vm.searchHistory.isNotEmpty)
+                if (settingsViewModel.searchHistory.isNotEmpty)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Search History:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onBackground, // 适应主题
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Wrap(
-                        alignment: WrapAlignment.start, // 左对齐
-                        spacing: 8, // 水平间距
-                        runSpacing: 8, // 换行间距
-                        children: vm.searchHistory.map((keyword) {
+                        alignment: WrapAlignment.start,
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: settingsViewModel.searchHistory.map((
+                          keyword,
+                        ) {
                           return Material(
-                            color: Colors.grey[200],
+                            color: colorScheme.secondaryContainer, // 替代固定灰色
                             borderRadius: BorderRadius.circular(16),
                             child: InkWell(
                               borderRadius: BorderRadius.circular(16),
                               onTap: () => _search(keyword),
-                              splashColor: Colors.blue.withAlpha(
-                                (0.3 * 255).round(),
-                              ), // 涟漪颜色
+                              splashColor: colorScheme.primary.withValues(
+                                alpha: 0.3,
+                              ), // 使用主题主色
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
                                   vertical: 6,
                                 ),
-                                child: Text(keyword),
+                                child: Text(
+                                  keyword,
+                                  style: TextStyle(
+                                    color:
+                                        colorScheme.onSurfaceVariant, // 文字适配主题
+                                  ),
+                                ),
                               ),
                             ),
                           );

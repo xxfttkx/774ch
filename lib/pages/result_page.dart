@@ -49,6 +49,7 @@ class _ResultPageState extends State<ResultPage> {
       temp.add({"title": title, "url": url, "time": time, "replies": replies});
     }
 
+    if (!mounted) return;
     setState(() {
       results = temp;
       loading = false;
