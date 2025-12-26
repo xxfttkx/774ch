@@ -69,4 +69,9 @@ class SettingsViewModel extends ChangeNotifier {
     await _prefs.setStringList('search_history', _searchHistory);
     notifyListeners();
   }
+
+  void removeSearchHistory(String keyword) {
+    _searchHistory.remove(keyword);
+    notifyListeners();
+  }
 }

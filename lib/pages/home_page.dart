@@ -34,6 +34,29 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _confirmDelete(String keyword) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete search history?'),
+        content: Text('Remove "$keyword" from history?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              context.read<SettingsViewModel>().removeSearchHistory(keyword);
+              Navigator.pop(context);
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final settingsViewModel = context.watch<SettingsViewModel>();
@@ -93,6 +116,9 @@ class _HomePageState extends State<HomePage> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(16),
                               onTap: () => _search(keyword),
+                              onLongPress: () {
+                                _confirmDelete(keyword);
+                              },
                               splashColor: colorScheme.primary.withValues(
                                 alpha: 0.3,
                               ), // 使用主题主色
