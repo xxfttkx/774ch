@@ -1,3 +1,4 @@
+import 'package:ch774/widgets/post_item.dart';
 import 'package:charset_converter/charset_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -89,24 +90,7 @@ class _ThreadPageState extends State<ThreadPage> {
               itemCount: list.length,
               separatorBuilder: (_, __) => const Divider(height: 1),
               itemBuilder: (_, i) {
-                final r = list[i];
-                return Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${r["post_id"]}  ${r["date_text"]}  ${r["uid_text"]}",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      SelectableText(r["body_text"]!),
-                    ],
-                  ),
-                );
+                return PostItem(post: list[i]);
               },
             ),
     );
