@@ -1,7 +1,8 @@
+import 'package:ch774/models/post.dart';
 import 'package:flutter/material.dart';
 
 class PostItem extends StatefulWidget {
-  final Map<String, String> post;
+  final Post post;
   const PostItem({super.key, required this.post});
 
   @override
@@ -18,7 +19,7 @@ class _PostItemState extends State<PostItem> {
 
   @override
   Widget build(BuildContext context) {
-    final body = widget.post["body_text"]!;
+    final body = widget.post.body;
     final images = extractImages(body);
 
     return Padding(
@@ -27,7 +28,7 @@ class _PostItemState extends State<PostItem> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "${widget.post["post_id"]}  ${widget.post["date_text"]}  ${widget.post["uid_text"]}",
+            "${widget.post.id}  ${widget.post.date}  ${widget.post.uid}",
             style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
           const SizedBox(height: 6),

@@ -1,8 +1,9 @@
+import 'package:ch774/models/post.dart';
+import 'package:ch774/parsers/fgo_parser.dart';
+import 'package:ch774/parsers/kurusuta_parser.dart';
+import 'package:ch774/services/thread_fetcher.dart';
 import 'package:ch774/widgets/post_item.dart';
-import 'package:charset_converter/charset_converter.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart';
 
 class ThreadPage extends StatefulWidget {
   final String url;
@@ -15,7 +16,10 @@ class ThreadPage extends StatefulWidget {
 class _ThreadPageState extends State<ThreadPage> {
   bool loading = true;
   bool reverse = true;
-  List<Map<String, String>> replies = [];
+  final fetcher = ThreadFetcher();
+  final parsers = [FGOParser(), KurusutaParser()];
+
+  List<Post> replies = [];
 
   @override
   void initState() {
@@ -24,47 +28,22 @@ class _ThreadPageState extends State<ThreadPage> {
   }
 
   Future<void> _fetch() async {
-    final res = await http.get(
-      Uri.parse(widget.url),
-      headers: {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
-    );
-
-    final bytes = res.bodyBytes;
-
-    // 自动识别 + Shift-JIS 解码
-    final decoded = await CharsetConverter.decode("shift_jis", bytes);
-
-    final document = parse(decoded);
-
-    final articles = document.querySelectorAll("article.clear.post");
-
-    final List<Map<String, String>> temp = [];
-
-    for (final art in articles) {
-      final postId = art.attributes["data-id"]?.trim() ?? "";
-
-      final header = art.querySelector("details.post-header");
-      if (header == null) continue;
-
-      final dateText = header.querySelector("span.date")?.text.trim() ?? "";
-      final uidText = header.querySelector("span.uid")?.text.trim() ?? "";
-
-      final content = art.querySelector("section.post-content");
-      final bodyText = content?.text.trim() ?? "";
-
-      temp.add({
-        "post_id": postId,
-        "date_text": dateText,
-        "uid_text": uidText,
-        "body_text": bodyText,
-      });
+    for (var parser in parsers) {
+      try {
+        final html = await fetcher.fetch(widget.url);
+        final posts = parser.parse(html);
+        if (posts.isNotEmpty) {
+          if (!mounted) return;
+          setState(() {
+            replies = posts;
+            loading = false;
+          });
+          return;
+        }
+      } catch (e) {
+        // Continue to the next parser
+      }
     }
-
-    if (!mounted) return;
-    setState(() {
-      replies = temp;
-      loading = false;
-    });
   }
 
   @override
